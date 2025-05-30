@@ -13,7 +13,7 @@ def setup_logging(app: FastAPI):
         level=logging.DEBUG,
         format="%(asctime)s - %(levelname)s - %(message)s",
         handlers=[
-            logging.StreamHandler(),  # Exibe os logs no console
+            logging.StreamHandler(),
             logging.FileHandler(LOG_FILE_PATH, mode='a', encoding='utf-8'),
         ],
     )
