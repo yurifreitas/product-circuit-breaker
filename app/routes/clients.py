@@ -31,3 +31,15 @@ async def delete_client(client_id: UUID):
 
     await client.delete()
     return {"message": "Cliente removido com sucesso", "client_id": str(client.id)}
+
+
+@router.put("/{client_id}", response_model=ClientOut)
+async def update_client(client_id: UUID, data: ClientCreate):
+    client = await Client.get(client_id)
+    if not client:
+        raise HTTPException(status_code=404, detail="Cliente não encontrado")
+
+    client.name = data.name
+    client.email = data.email
+    await client.save()
+    return ClientOut.model_validate(client, from_attributes=True)
