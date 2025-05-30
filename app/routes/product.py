@@ -11,28 +11,23 @@ PRODUCT_API = "https://challenge-api.luizalabs.com/api/product/"
 logger = logging.getLogger("product_api")
 router = APIRouter()
 
-# Configuração do Redis
 redis_client = redis.StrictRedis(host='redis', port=6379, db=0, decode_responses=True)
 
 @router.get("/products", response_model=list[ProductOut])
 async def list_all_products(MAX_PAGES=10):
-    """Lista todos os produtos através da API externa e armazena no cache Redis se necessário."""
+    """Lista todos os produtos através da API."""
     produtos: list[ProductOut] = []
     page = 1
 
     try:
         while page <= MAX_PAGES:
-            cache_key = f"products_page_{page}"  # Chave do Redis para a página atual
-
-            # Verifica se os dados da página já estão no cache Redis
+            cache_key = f"products_page_{page}"
             cached_products = redis_client.get(cache_key)
             if cached_products:
                 logger.info(f"[CACHE] Produtos da página {page} obtidos do Redis.")
                 produtos.extend(json.loads(cached_products))  # Carrega os produtos do Redis
                 page += 1
-                continue  # Pular a requisição e ir para a próxima página
-
-            # Se não estiver no cache, faz a requisição à API
+                continue
             async with httpx.AsyncClient(verify=False) as client:
                 r = await circuit_breaker.call(client.get, f"{PRODUCT_API}?page={page}")
 
@@ -45,11 +40,8 @@ async def list_all_products(MAX_PAGES=10):
 
                 if not isinstance(results, list) or len(results) == 0:
                     logger.info(f"[API] Nenhum produto na página {page}")
-                    break  # Fim da paginação
-
-                # Armazenar os produtos no Redis com expiração de 10 minutos
+                    break
                 redis_client.setex(cache_key, timedelta(minutes=10), json.dumps(results))
-
                 for p in results:
                     try:
                         produtos.append(ProductOut(
@@ -70,7 +62,6 @@ async def list_all_products(MAX_PAGES=10):
     except Exception as e:
         logger.warning(f"[FALHA API] Erro geral ao buscar produtos reais: {e}")
 
-    # Fallback → mock
     from app.products_mock import MOCK_PRODUCTS
     logger.info("[MOCK] Retornando produtos do mock.")
     return [
