@@ -67,8 +67,9 @@ Onde os logs da aplicação são armazenados.
 ### 6. **Diretório `tests/`**
 Contém os testes automatizados.
 
-- **`test_api.py`**: Testes para a API da aplicação.
+- **`test_api.py`**: Testes para a API da client.
 - **`test_wishlist.py`**: Testes para a funcionalidade de wishlist.
+- **`test_product.py`**: Testes para a funcionalidade de product.
 
 ---
 
@@ -81,9 +82,9 @@ Contém os testes automatizados.
 - **PyJWT** (para JWT): [Documentação PyJWT](https://pyjwt.readthedocs.io/en/stable/)
 - **Prometheus FastAPI Instrumentator**: [GitHub Instrumentator](https://github.com/trallnag/prometheus-fastapi-instrumentator)
 - **PassLib** (para criptografia de senhas): [Documentação PassLib](https://passlib.readthedocs.io/en/stable/narr/index.html)
+- **Uvicorn**: [Documentação do Uvicorn](https://www.uvicorn.org/)
 
 ### Links da aplicação
-- **Uvicorn**: [Documentação do Uvicorn](https://www.uvicorn.org/)
 - **Documentação Swagger da API**: [http://0.0.0.0:8001/docs](http://0.0.0.0:8001/docs)
 - **Documentação Redoc da API**: [http://0.0.0.0:8001/redoc](http://0.0.0.0:8001/redoc)
 
