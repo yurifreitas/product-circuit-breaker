@@ -1,6 +1,14 @@
 from pydantic import BaseModel, EmailStr, Field
 from typing import List
 from uuid import UUID
+class User(BaseModel):
+    username: str
+    password: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
 class MessageOut(BaseModel):
     message: str
     client_id: str
