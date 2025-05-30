@@ -26,61 +26,6 @@ async def product_exists(product_id: str) -> bool:
     logger.info(f"[MOCK CHECK] {product_id} → {fallback is not None}")
     return fallback is not None
 
-@router.get("/products", response_model=list[ProductOut])
-async def list_all_products():
-    produtos: list[ProductOut] = []
-    MAX_PAGES = 10
-    page = 1
-
-    try:
-        while page <= MAX_PAGES:
-            async with httpx.AsyncClient(verify=False) as client:
-                r = await circuit_breaker.call(client.get, f"{PRODUCT_API}?page={page}")
-
-                if r.status_code != 200:
-                    logger.warning(f"[API] Falha ao buscar página {page} (status={r.status_code})")
-                    break
-
-                data = r.json()
-                results = data.get("products") or data.get("results") or data
-
-                if not isinstance(results, list) or len(results) == 0:
-                    logger.info(f"[API] Nenhum produto na página {page}")
-                    break  # Fim da paginação
-
-                for p in results:
-                    try:
-                        produtos.append(ProductOut(
-                            id=p.get("id"),
-                            title=p.get("title"),
-                            image=p.get("image"),
-                            price=p.get("price"),
-                            reviewScore=p.get("reviewScore")
-                        ))
-                    except Exception as parse_error:
-                        logger.warning(f"[API] Erro ao parsear produto: {parse_error}")
-                page += 1
-
-        if produtos:
-            logger.info(f"[API] Produtos reais carregados: {len(produtos)}")
-            return produtos
-
-    except Exception as e:
-        logger.warning(f"[FALHA API] Erro geral ao buscar produtos reais: {e}")
-
-    # Fallback → mock
-    from app.products_mock import MOCK_PRODUCTS
-    logger.info("[MOCK] Retornando produtos do mock.")
-    return [
-        ProductOut(
-            id=p["id"],
-            title=p["title"],
-            image=p["image"],
-            price=p["price"],
-            reviewScore=p.get("reviewScore")
-        )
-        for p in MOCK_PRODUCTS.values()
-    ]
 @router.post("/{client_id}/add", response_model=WishlistOut)
 async def add_to_wishlist(client_id: str, body: WishlistUpdate):
     try:
