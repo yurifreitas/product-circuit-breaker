@@ -1,5 +1,12 @@
 # **Documentação do Projeto**
+## **Construir as Imagens do Docker**
 
+Para construir as imagens do Docker a partir do `Dockerfile` e das configurações do `docker-compose.yml`, execute o seguinte comando no terminal:
+
+```bash
+  docker-compose build
+  docker-compose up
+```
 ## **Estrutura de Diretórios**
 
 ### 1. **Raiz do Projeto**
@@ -79,6 +86,9 @@ Contém os testes automatizados.
 - **Uvicorn**: [Documentação do Uvicorn](https://www.uvicorn.org/)
 - **Documentação Swagger da API**: [http://0.0.0.0:8001/docs](http://0.0.0.0:8001/docs)
 - **Documentação Redoc da API**: [http://0.0.0.0:8001/redoc](http://0.0.0.0:8001/redoc)
+
+### Para gerar token só usar a senha
+- mysecretpassword
 
 ### Dashboard Prometheus
 - **Prometheus Web Interface**: [http://localhost:3000/](http://localhost:3000/)
