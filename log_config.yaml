@@ -1,0 +1,13 @@
+version: 1
+disable_existing_loggers: False
+formatters:
+  default:
+    format: '%(asctime)s - %(levelname)s - %(message)s'
+handlers:
+  file:
+    class: logging.FileHandler
+    filename: 'logs/app.log'
+    formatter: default
+root:
+  handlers: [file]
+  level: DEBUG

@@ -11,6 +11,7 @@ services:
       - mongo
       - redis
     volumes:
+      - ./logs:/app/logs
       - .:/app
 
   mongo:
@@ -39,6 +40,48 @@ services:
     volumes:
       - .:/app
     working_dir: /app
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - api
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+
+  loki:
+    image: grafana/loki:2.9.0
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./infra/loki-config.yaml:/etc/loki/local-config.yaml
+      - ./infra/loki/chunks:/tmp/loki/chunks
+      - ./infra/loki/index:/tmp/loki/index
+      - ./infra/loki/cache:/tmp/loki/cache
+      - ./infra/loki/wal:/wal
+      - ./infra/loki/compactor:/tmp/loki/compactor
+
+  promtail:
+    image: grafana/promtail:2.9.0
+    volumes:
+      - ./logs:/logs
+      - ./infra/promtail-config.yaml:/etc/promtail/promtail.yaml
+    command: -config.file=/etc/promtail/promtail.yaml
+    depends_on:
+      - loki
 
 volumes:
   mongo_data:
+  grafana_data:
