@@ -26,9 +26,6 @@ async def product_exists(product_id: str) -> bool:
     logger.info(f"[MOCK CHECK] {product_id} → {fallback is not None}")
     return fallback is not None
 
-
-
-
 @router.get("/products", response_model=list[ProductOut])
 async def list_all_products():
     produtos: list[ProductOut] = []
@@ -84,8 +81,6 @@ async def list_all_products():
         )
         for p in MOCK_PRODUCTS.values()
     ]
-
-# ➕ Adiciona produto à wishlist
 @router.post("/{client_id}/add", response_model=WishlistOut)
 async def add_to_wishlist(client_id: str, body: WishlistUpdate):
     try:
