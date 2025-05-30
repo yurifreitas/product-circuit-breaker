@@ -38,7 +38,8 @@ async def update_client(client_id: UUID, data: ClientCreate):
     client = await Client.get(client_id)
     if not client:
         raise HTTPException(status_code=404, detail="Cliente não encontrado")
-
+    if data.email != client.email and await Client.find_one(Client.email == data.email):
+        raise HTTPException(status_code=400, detail="Email já registrado.")
     client.name = data.name
     client.email = data.email
     await client.save()
